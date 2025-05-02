@@ -16,6 +16,7 @@ const getFacilityById_url = (id) => `${BACKEND_URL}get-facility-by-id/${id}`
 const getNurseById_url = (id) => `${BACKEND_URL}get-nurse-by-id/${id}`
 const deleteFacility_url = (id) => `${BACKEND_URL}delete-facility/${id}`
 const deleteNurse_url = (id) => `${BACKEND_URL}delete-nurse/${id}`
+const deleteService_url = (id,role) => `${BACKEND_URL}delete-service/${id}/${role}`
 export{
     login_url,
     token_verify,
@@ -32,5 +33,6 @@ export{
     getNurseById_url,
     editNurse_url,
     deleteFacility_url,
-    deleteNurse_url
+    deleteNurse_url,
+    deleteService_url
 }

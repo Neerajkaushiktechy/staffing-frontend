@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { get, put } from "../services/apiServices";
-import { getFacilityById_url, editFacility_url, getNurseType_url } from "../urls/adminUrls";
+import { del, get, put } from "../services/apiServices";
+import { getFacilityById_url, editFacility_url, getNurseType_url, deleteService_url } from "../urls/adminUrls";
 import { toast } from 'react-toastify';
 import { Loader } from '../components/loader';
 import PhoneInput from 'react-phone-input-2';
@@ -20,55 +20,54 @@ export const EditFacility = () => {
   const [multiplier, setMultiplier] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [nurseType, setNurseType] = useState([]);
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      // Fetch facility data
+      const facilityRes = await get(getFacilityById_url(id), true);
+      const facilityData = facilityRes.data.facilities;
+      const nurses_array = facilityRes.data.services;
+      const [state, city, zip] = facilityData.city_state_zip.split(',').map(s => s.trim());
+      // Set facility data
+      setName(facilityData.name || "");
+      setAddress(facilityData.address || "");
+      setCity(city || "");
+      setState(state || "");
+      setZip(zip || "");
+      setPhone(facilityData.phone || "");
+      setMultiplier(facilityData.multiplier || 0);
+      
+      // Transform nurses data to match the expected format
+      const transformedNurses = nurses_array.map(nurse => ({
+        nurseType: nurse.role,
+        amTimeStart: nurse.am_time_start || "",
+        amTimeEnd: nurse.am_time_end || "",
+        pmTimeStart: nurse.pm_time_start || "",
+        pmTimeEnd: nurse.pm_time_end || "",
+        nocTimeStart: nurse.noc_time_start || "",
+        nocTimeEnd: nurse.noc_time_end || "",
+        amMealStart: nurse.am_meal_start || "",
+        amMealEnd: nurse.am_meal_end || "",
+        pmMealStart: nurse.pm_meal_start || "",
+        pmMealEnd: nurse.pm_meal_end || "",
+        nocMealStart: nurse.noc_meal_start || "",
+        nocMealEnd: nurse.noc_meal_end || "",
+        rate: nurse.rate || ""
+      }));
+      setNurses(transformedNurses);
 
+      // Fetch nurse types
+      const nurseTypeRes = await get(getNurseType_url, true);
+      setNurseType(nurseTypeRes.data.nurse_types);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load facility data");
+      navigate('/facilities');
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        // Fetch facility data
-        const facilityRes = await get(getFacilityById_url(id), true);
-        const facilityData = facilityRes.data.facilities;
-        const nurses_array = facilityRes.data.services;
-        const [state, city, zip] = facilityData.city_state_zip.split(',').map(s => s.trim());
-        // Set facility data
-        setName(facilityData.name || "");
-        setAddress(facilityData.address || "");
-        setCity(city || "");
-        setState(state || "");
-        setZip(zip || "");
-        setPhone(facilityData.phone || "");
-        setMultiplier(facilityData.multiplier || 0);
-        
-        // Transform nurses data to match the expected format
-        const transformedNurses = nurses_array.map(nurse => ({
-          nurseType: nurse.role,
-          amTimeStart: nurse.am_time_start || "",
-          amTimeEnd: nurse.am_time_end || "",
-          pmTimeStart: nurse.pm_time_start || "",
-          pmTimeEnd: nurse.pm_time_end || "",
-          nocTimeStart: nurse.noc_time_start || "",
-          nocTimeEnd: nurse.noc_time_end || "",
-          amMealStart: nurse.am_meal_start || "",
-          amMealEnd: nurse.am_meal_end || "",
-          pmMealStart: nurse.pm_meal_start || "",
-          pmMealEnd: nurse.pm_meal_end || "",
-          nocMealStart: nurse.noc_meal_start || "",
-          nocMealEnd: nurse.noc_meal_end || "",
-          rate: nurse.rate || ""
-        }));
-        setNurses(transformedNurses);
-
-        // Fetch nurse types
-        const nurseTypeRes = await get(getNurseType_url, true);
-        setNurseType(nurseTypeRes.data.nurse_types);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load facility data");
-        navigate('/facilities');
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
     fetchData();
   }, [id, navigate]);
@@ -100,7 +99,7 @@ export const EditFacility = () => {
       name, address, city, state, zip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier,
       nurses: nurses.map(nurse => ({ ...nurse }))
     };
-
+    console.log("NURSES", nurses);
     setIsLoading(true);
     try {
       const res = await put(editFacility_url(id), formData, true);
@@ -133,12 +132,13 @@ export const EditFacility = () => {
     setNurses(updated);
   };
 
-  const handleToggleNurseType = (type) => {
+  const handleToggleNurseType = async (type) => {
     const exists = nurses.find(n => n.nurseType === type);
   
     if (exists) {
-      setNurses(prev => prev.filter(n => n.nurseType !== type));
+      handleDeleteService(id, type);
     } else {
+      // Add the nurse type when the checkbox is checked
       setNurses(prev => [
         ...prev,
         {
@@ -151,7 +151,19 @@ export const EditFacility = () => {
       ]);
     }
   };
-
+  const handleDeleteService = async (id, role) => {
+    try {
+      const res = await del(deleteService_url(id, role), true);
+      if (res.data.status === 200) {
+        toast.success("Service removed successfully");
+        fetchData();
+        
+      }
+    } catch (error) {
+      console.error("Error removing service:", error);
+      toast.error("Failed to removing service");
+    }
+  }
   if (isLoading) {
     return <Loader />;
   }
@@ -241,7 +253,9 @@ export const EditFacility = () => {
 
       {nurses.map((nurse, index) => (
         <div key={index} className="w-full max-w-5xl mt-12 border-t pt-10 space-y-8">
-          <h3 className="text-lg font-semibold mb-4">Enter Details for {nurse.nurseType} Nurse</h3>
+          <h3 className="text-lg font-semibold mb-4 flex items-center justify-between">
+            Enter Details for {nurse.nurseType} Nurse
+          </h3>
           {nurse.nurseType && (
             <>
               {/* Shifts */}
@@ -311,4 +325,4 @@ export const EditFacility = () => {
   );
 };
 
-export default EditFacility; 
+export default EditFacility;
