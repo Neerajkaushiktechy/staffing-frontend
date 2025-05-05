@@ -20,6 +20,7 @@ export const EditFacility = () => {
   const [multiplier, setMultiplier] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [nurseType, setNurseType] = useState([]);
+  const [email, setEmail] = useState("");
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -36,6 +37,7 @@ export const EditFacility = () => {
       setZip(zip || "");
       setPhone(facilityData.phone || "");
       setMultiplier(facilityData.multiplier || 0);
+      setEmail(facilityData.email || "");
       
       // Transform nurses data to match the expected format
       const transformedNurses = nurses_array.map(nurse => ({
@@ -73,11 +75,21 @@ export const EditFacility = () => {
   }, [id, navigate]);
 
   const handleSubmit = async () => {
-     if (!name || !address || !city || !state || !zip || !phone || multiplier === undefined || multiplier === null) {
+     if (!email||!name || !address || !city || !state || !zip || !phone || multiplier === undefined || multiplier === null) {
           toast.error("Please fill out all facility fields.");
           return;
         }
-    
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\+?[1-9]\d{6,14}$/;
+                if (!emailRegex.test(email)) {
+                  toast.error("Please enter a valid email address");
+                  return;
+                }
+            
+                if (!phoneRegex.test(phone)) {
+                  toast.error("Please enter a valid 10-digit phone number");
+                  return;
+                }
         if (nurses.length === 0) {
           toast.error("Please select at least one nurse type.");
           return;
@@ -96,7 +108,7 @@ export const EditFacility = () => {
         }
     
     const formData = {
-      name, address, city, state, zip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier,
+      name, address, city, state, zip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
       nurses: nurses.map(nurse => ({ ...nurse }))
     };
     console.log("NURSES", nurses);
@@ -105,7 +117,7 @@ export const EditFacility = () => {
       const res = await put(editFacility_url(id), formData, true);
       if (res.data.status === 200) {
         toast.success("Facility updated successfully");
-        navigate(`/edit-facility/${id}`);
+        navigate(`/facilities`);
       } else if (res.data.status === 400) {
         toast.error("Phone number already exists");
       } else if (res.data.status === 500) {
@@ -202,7 +214,16 @@ export const EditFacility = () => {
               className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
-
+        <div className="space-y-2">
+          <label className="text-gray-700 font-medium">Email</label>
+          <input
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-2">
             <label className="text-gray-700 font-medium">Phone Number</label>

@@ -7,9 +7,10 @@ import PrivateRoute from './privateRoute';
 import FacilitiesList from '../pages/facilities';
 import Nurses from '../pages/nurses';
 import AddNurse from '../pages/addNurse';
-import Settings from '../pages/settings';
+import ManageNurses from '../pages/manageNurseTypes';
 import EditFacility from '../pages/editFacility';
 import EditNurse from '../pages/editNurse';
+import SettingsMain from '../pages/settingsMain';
 const AppRoutes = () => {
   return (
       <Routes>
@@ -47,10 +48,10 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/settings"
+          path="/manage-nurse-types"
           element={
             <PrivateRoute>
-              <Settings/>
+              <ManageNurses/>
             </PrivateRoute>
           }
         />
@@ -66,6 +67,14 @@ const AppRoutes = () => {
           <EditNurse/>
         </PrivateRoute>
         } />
+        <Route
+          path="/settings"
+          element={
+            <PrivateRoute>
+              <SettingsMain/>
+            </PrivateRoute>
+          }
+        />
         <Route path="*" element={<NotFoundPage/>}/>
       </Routes>
   );

@@ -18,6 +18,7 @@ export const AddFacility = () => {
   const [multiplier, setMultiplier] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [nurseType, setNurseType] = useState([])
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const getNurseType = async ()=>{
@@ -28,11 +29,21 @@ export const AddFacility = () => {
   }, []);
 
   const handleSubmit = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?[1-9]\d{6,14}$/;
     if (!name || !address || !city || !state || !zip || !phone || multiplier === undefined || multiplier === null) {
       toast.error("Please fill out all facility fields.");
       return;
     }
-
+        if (!emailRegex.test(email)) {
+          toast.error("Please enter a valid email address");
+          return;
+        }
+    
+        if (!phoneRegex.test(phone)) {
+          toast.error("Please enter a valid 10-digit phone number");
+          return;
+        }
     if (nurses.length === 0) {
       toast.error("Please select at least one nurse type.");
       return;
@@ -51,7 +62,7 @@ export const AddFacility = () => {
     }
 
     const formData = {
-      name, address, city, state, zip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier,
+      name, address, city, state, zip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
       nurses: nurses.map(nurse => ({ 
         ...nurse
       }))
@@ -71,8 +82,9 @@ export const AddFacility = () => {
       setPhone("")
       setState("")
       setZip(0)
+      setEmail("")
     } else if (res.data.status === 400) {
-      toast.error("Phone number already exists");
+      toast.error("Phone number or email already exists");
     } else if (res.data.status === 500) {
       toast.error("An error has occurred");
     }
@@ -146,6 +158,18 @@ export const AddFacility = () => {
             <input type="number" placeholder="ZIP" value={zip} onChange={e => setZip(e.target.value)}
               className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
+        </div>
+
+        {/* Email Field */}
+        <div className="space-y-2">
+          <label className="text-gray-700 font-medium">Email</label>
+          <input
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
