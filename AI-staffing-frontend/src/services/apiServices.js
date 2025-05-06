@@ -8,7 +8,6 @@ const post = async(url,data, credentials)=>{
             },
             withCredentials:credentials
         })
-        console.log("POST response from Backend", response.data)
         return response
     } catch (error) {
         console.error("ERROR", error)
@@ -16,7 +15,6 @@ const post = async(url,data, credentials)=>{
 }
 
 const get = async(url,credentials)=>{
-    console.log("GET URL", url)
     try {
         const response = await axios.get(url,{
             headers:{
@@ -24,7 +22,6 @@ const get = async(url,credentials)=>{
             },
             withCredentials:credentials
         })
-        console.log("GET response from Backend", response.data)
         return response
     } catch (error) {
         console.error("ERROR", error)
@@ -39,7 +36,6 @@ const put = async (url, data, credentials) => {
             },
             withCredentials: credentials
         });
-        console.log("PUT response from Backend", response.data);
         return response;
     } catch (error) {
         console.error("PUT ERROR", error);
@@ -54,7 +50,6 @@ const del = async (url, credentials) => {
             },
             withCredentials: credentials
         });
-        console.log("DELETE response from Backend", response.data);
         return response;
     } catch (error) {
         console.error("DELETE ERROR", error);

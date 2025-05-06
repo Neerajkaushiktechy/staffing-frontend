@@ -106,7 +106,6 @@ export const EditFacility = () => {
       name, address, cityStateZip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
       nurses: nurses.map(nurse => ({ ...nurse }))
     };
-    console.log("NURSES", nurses);
     setIsLoading(true);
     try {
       const res = await put(editFacility_url(id), formData, true);
