@@ -11,6 +11,7 @@ import ManageNurses from '../pages/manageNurseTypes';
 import EditFacility from '../pages/editFacility';
 import EditNurse from '../pages/editNurse';
 import SettingsMain from '../pages/settingsMain';
+import BookingCalendar from '../pages/calendar';
 const AppRoutes = () => {
   return (
       <Routes>
@@ -72,6 +73,14 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <SettingsMain/>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/bookingscalendar"
+          element={
+            <PrivateRoute>
+              <BookingCalendar/>
             </PrivateRoute>
           }
         />
