@@ -1,5 +1,6 @@
 import React from 'react'
 import facilities_logo from '../assets/facilities.png'
+import calendar_logo from '../assets/calendar_logo.png'
 import nurses_logo from '../assets/nurses_logo.png'
 import settings_logo from '../assets/settings_logo.png'
 import { Link } from 'react-router-dom'
@@ -9,6 +10,13 @@ export const Sidebar = () => {
 <aside id="separator-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
    <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
       <ul className="space-y-2 font-medium">
+      <li>
+         <Link to="/bookingscalendar" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <img src={calendar_logo} alt="Facilities Logo" className="w-5 h-5 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white"/>
+            <span className="ms-3">Calendar</span>
+         </Link>
+
+         </li>
          <li>
          <Link to="/facilities" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <img src={facilities_logo} alt="Facilities Logo" className="w-5 h-5 transition duration-75 group-hover:text-gray-900 dark:group-hover:text-white"/>
