@@ -16,7 +16,7 @@ const AddNurse = () => {
   const [talentId, setTalentId] = useState(0);
   const [position, setPosition] = useState('');
   const [location, setLocation] = useState('');
-
+  const [shift, setShift] = useState('');
   const inputStyle =
     'w-full p-3 rounded-lg bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500';
 
@@ -25,7 +25,7 @@ const AddNurse = () => {
     const phoneRegex = /^\+?[1-9]\d{6,14}$/;
 
 
-    if (!firstName || !lastName || !scheduleName || !rate || !shiftDif || !otRate || !email || !phone || !talentId || !position) {
+    if (!firstName || !lastName || !scheduleName || !rate || !shiftDif || !otRate || !email || !phone || !talentId || !position || !location || !shift) {
       toast.error("Please fill all nurse fields");
       return;
     }
@@ -36,7 +36,7 @@ const AddNurse = () => {
     }
 
     if (!phoneRegex.test(phone)) {
-      toast.error("Please enter a valid 10-digit phone number");
+      toast.error("Please enter a valid phone number");
       return;
     }
 
@@ -51,7 +51,8 @@ const AddNurse = () => {
       phone: phone.startsWith('+') ? phone : `+${phone}`,
       talentId,
       position,
-      location
+      location,
+      shift,
     };
 
     try {
@@ -69,6 +70,7 @@ const AddNurse = () => {
         setTalentId(0);
         setPosition('');
         setLocation('');
+        setShift('');
       } else {
         toast.error("An error has occurred");
       }
@@ -108,13 +110,13 @@ const AddNurse = () => {
 
         {/* Phone and Email */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
+        <div>
             <label className="block mb-1 font-medium">Phone</label>
             <PhoneInput
               country={'us'}
               value={phone}
               onChange={setPhone}
-              inputClass="!w-full !h-[46px] !p-3 !rounded-lg !bg-blue-50 !border !border-blue-300 !focus:outline-none !focus:ring-2 !focus:ring-blue-500"
+              inputClass="!w-full !h-[46px] !p-3 !pl-12 !rounded-lg !bg-blue-50 !border !border-blue-300 !focus:outline-none !focus:ring-2 !focus:ring-blue-500"
               buttonClass="!h-[46px] !bg-blue-50 !border !border-blue-300 !rounded-l-lg !hover:bg-blue-100"
               containerClass="!w-full"
               dropdownClass="!bg-white !border !border-blue-300 !rounded-lg !shadow-lg"
@@ -214,6 +216,16 @@ const AddNurse = () => {
               placeholder="Enter location"
               value={location}
               onChange={(e) => setLocation((e.target.value))}
+              className={inputStyle}
+            />
+          </div> 
+          <div>
+            <label className="block mb-1 font-medium">Shift</label>
+            <input
+              type="text"
+              placeholder="Enter shift"
+              value={shift}
+              onChange={(e) => setShift((e.target.value))}
               className={inputStyle}
             />
           </div> 

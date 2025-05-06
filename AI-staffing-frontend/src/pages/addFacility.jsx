@@ -11,14 +11,12 @@ export const AddFacility = () => {
   const [nurses, setNurses] = useState([]);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zip, setZip] = useState("");
   const [phone, setPhone] = useState("");
   const [multiplier, setMultiplier] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [nurseType, setNurseType] = useState([])
   const [email, setEmail] = useState("");
+  const [cityStateZip, setCityStateZip] = useState("");
 
   useEffect(() => {
     const getNurseType = async ()=>{
@@ -31,7 +29,7 @@ export const AddFacility = () => {
   const handleSubmit = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{6,14}$/;
-    if (!name || !address || !city || !state || !zip || !phone || multiplier === undefined || multiplier === null) {
+    if (!name || !address || !cityStateZip|| !phone || multiplier === undefined || multiplier === null) {
       toast.error("Please fill out all facility fields.");
       return;
     }
@@ -62,7 +60,7 @@ export const AddFacility = () => {
     }
 
     const formData = {
-      name, address, city, state, zip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
+      name, address, cityStateZip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
       nurses: nurses.map(nurse => ({ 
         ...nurse
       }))
@@ -75,13 +73,11 @@ export const AddFacility = () => {
     if (res.data.status === 200) {
       toast.success("Facility added successfully");
       setAddress("")
-      setCity("")
+      setCityStateZip
       setMultiplier(0)
       setName("")
       setNurses([])
       setPhone("")
-      setState("")
-      setZip(0)
       setEmail("")
     } else if (res.data.status === 400) {
       toast.error("Phone number or email already exists");
@@ -143,24 +139,16 @@ export const AddFacility = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">City</label>
-            <input type="text" placeholder="City" value={city} onChange={e => setCity(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">State</label>
-            <input type="text" placeholder="State" value={state} onChange={e => setState(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">ZIP Code</label>
-            <input type="number" placeholder="ZIP" value={zip} onChange={e => setZip(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
+        <div className="md:col-span-2 space-y-2">
+          <label className="text-gray-700 font-medium">City, State, ZIP</label>
+          <input
+            type="text"
+            placeholder="Enter City, State, ZIP (e.g., Los Angeles, CA 90001)"
+            value={cityStateZip}
+            onChange={(e) => setCityStateZip(e.target.value)}
+            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
-
-        {/* Email Field */}
         <div className="space-y-2">
           <label className="text-gray-700 font-medium">Email</label>
           <input
@@ -171,6 +159,9 @@ export const AddFacility = () => {
             className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+        </div>
+
+        {/* Email Field */}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-2">

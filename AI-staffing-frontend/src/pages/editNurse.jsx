@@ -22,6 +22,7 @@ const EditNurse = () => {
   const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [location, setLocation] = useState('');
+  const [shift, setShift] = useState('');
   useEffect(() => {
     const fetchNurseData = async () => {
       try {
@@ -40,6 +41,7 @@ const EditNurse = () => {
         setPosition(nurseData.nurse_type || '');
         setPhone(nurseData.mobile_number || '');
         setLocation(nurseData.location || '');
+        setShift(nurseData.shift || '');
       } catch (error) {
         console.error("Error fetching nurse data:", error);
         toast.error("Failed to load nurse data");
@@ -57,7 +59,7 @@ const EditNurse = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{6,14}$/;
 
-    if (!firstName || !lastName || !scheduleName || !rate || !shiftDif || !otRate || !email || !talentId || !position || !phone) {
+    if (!firstName || !lastName || !scheduleName || !rate || !shiftDif || !otRate || !email || !talentId || !position || !phone || !location || !shift) {
       toast.error("Please fill all nurse fields");
       return;
     }
@@ -68,7 +70,7 @@ const EditNurse = () => {
     }
 
     if (!phoneRegex.test(phone)) {
-      toast.error("Please enter a valid 10-digit phone number");
+      toast.error("Please enter a valid phone number");
       return;
     }
 
@@ -83,7 +85,8 @@ const EditNurse = () => {
       talentId,
       position,
       phone: phone.startsWith('+') ? phone : `+${phone}`,
-      location
+      location,
+      shift,
     };
 
     try {
@@ -146,7 +149,7 @@ const EditNurse = () => {
               country={'us'}
               value={phone}
               onChange={setPhone}
-              inputClass="!w-full !h-[46px] !p-3 !rounded-lg !bg-blue-50 !border !border-blue-300 !focus:outline-none !focus:ring-2 !focus:ring-blue-500"
+              inputClass="!w-full !h-[46px] !p-3 !pl-12 !rounded-lg !bg-blue-50 !border !border-blue-300 !focus:outline-none !focus:ring-2 !focus:ring-blue-500"
               buttonClass="!h-[46px] !bg-blue-50 !border !border-blue-300 !rounded-l-lg !hover:bg-blue-100"
               containerClass="!w-full"
               dropdownClass="!bg-white !border !border-blue-300 !rounded-lg !shadow-lg"
@@ -248,6 +251,16 @@ const EditNurse = () => {
               className={inputStyle}
             />
           </div> 
+          <div>
+            <label className="block mb-1 font-medium">Shift</label>
+            <input
+              type="text"
+              placeholder="Enter shift"
+              value={shift}
+              onChange={(e) => setShift((e.target.value))}
+              className={inputStyle}
+            />
+          </div>
         </div>
         {/* Submit Button */}
         <div className="pt-4">

@@ -13,14 +13,12 @@ export const EditFacility = () => {
   const [nurses, setNurses] = useState([]);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zip, setZip] = useState("");
   const [phone, setPhone] = useState("");
   const [multiplier, setMultiplier] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [nurseType, setNurseType] = useState([]);
   const [email, setEmail] = useState("");
+  const [cityStateZip, setCityStateZip] = useState("");
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -28,15 +26,12 @@ export const EditFacility = () => {
       const facilityRes = await get(getFacilityById_url(id), true);
       const facilityData = facilityRes.data.facilities;
       const nurses_array = facilityRes.data.services;
-      const [state, city, zip] = facilityData.city_state_zip.split(',').map(s => s.trim());
       // Set facility data
       setName(facilityData.name || "");
       setAddress(facilityData.address || "");
-      setCity(city || "");
-      setState(state || "");
-      setZip(zip || "");
+      setCityStateZip(facilityData.city_state_zip || "");
       setPhone(facilityData.phone || "");
-      setMultiplier(facilityData.multiplier || 0);
+      setMultiplier(facilityData.overtime_multiplier || 0);
       setEmail(facilityData.email || "");
       
       // Transform nurses data to match the expected format
@@ -75,7 +70,7 @@ export const EditFacility = () => {
   }, [id, navigate]);
 
   const handleSubmit = async () => {
-     if (!email||!name || !address || !city || !state || !zip || !phone || multiplier === undefined || multiplier === null) {
+     if (!email||!name || !address || !cityStateZip || !phone || multiplier === undefined || multiplier === null) {
           toast.error("Please fill out all facility fields.");
           return;
         }
@@ -108,7 +103,7 @@ export const EditFacility = () => {
         }
     
     const formData = {
-      name, address, city, state, zip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
+      name, address, cityStateZip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
       nurses: nurses.map(nurse => ({ ...nurse }))
     };
     console.log("NURSES", nurses);
@@ -198,21 +193,15 @@ export const EditFacility = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">City</label>
-            <input type="text" placeholder="City" value={city} onChange={e => setCity(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">State</label>
-            <input type="text" placeholder="State" value={state} onChange={e => setState(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">ZIP Code</label>
-            <input type="number" placeholder="ZIP" value={zip} onChange={e => setZip(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
+        <div className="md:col-span-2 space-y-2">
+          <label className="text-gray-700 font-medium">City, State, ZIP</label>
+          <input
+            type="text"
+            placeholder="Enter City, State, ZIP (e.g., Los Angeles, CA 90001)"
+            value={cityStateZip}
+            onChange={(e) => setCityStateZip(e.target.value)}
+            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
         <div className="space-y-2">
           <label className="text-gray-700 font-medium">Email</label>
@@ -223,6 +212,7 @@ export const EditFacility = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-2">
