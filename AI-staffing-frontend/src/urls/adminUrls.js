@@ -5,7 +5,6 @@ const token_verify = `${BACKEND_URL}verify-token`
 const addFacility_url = `${BACKEND_URL}add-facility`
 const editFacility_url = (id) => `${BACKEND_URL}edit-facility/${id}`
 const editNurse_url = (id) => `${BACKEND_URL}edit-nurse/${id}`
-const check_login_url = `${BACKEND_URL}check-login`
 const logout_url = `${BACKEND_URL}logout`
 const getFacilities_url = `${BACKEND_URL}get-facility`
 const getNurses_url = `${BACKEND_URL}get-nurses`
@@ -20,12 +19,12 @@ const deleteService_url = (id,role) => `${BACKEND_URL}delete-service/${id}/${rol
 const getNurseTypes_url = `${BACKEND_URL}get-nurse-types`
 const deleteNurseType_url = (id) => `${BACKEND_URL}delete-nurse-type/${id}`
 const updateNurseType_url = (id) => `${BACKEND_URL}edit-nurse-type/${id}`
+const getShifts_url = (params) => `${BACKEND_URL}get-shifts?${params.toString()}`
 export{
     login_url,
     token_verify,
     addFacility_url,
     editFacility_url,
-    check_login_url,
     logout_url,
     getFacilities_url,
     getNurses_url,
@@ -40,5 +39,6 @@ export{
     deleteService_url,
     getNurseTypes_url,
     deleteNurseType_url,
-    updateNurseType_url
+    updateNurseType_url,
+    getShifts_url
 }

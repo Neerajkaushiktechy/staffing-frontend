@@ -14,15 +14,24 @@ export const FacilitiesList = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [limit, setLimit] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchFacilities();
-  }, [currentPage, limit]);
+  }, [currentPage, limit, search]);
 
   const fetchFacilities = async () => {
     try {
       setIsLoading(true);
-      const res = await get(`${getFacilities_url}?page=${currentPage}&limit=${limit}`, true);
+      const queryParams = new URLSearchParams({
+        page: currentPage,
+        limit: limit,
+      });
+      if (search.trim() !== '') {
+        queryParams.append('search', search.trim());
+      }
+  
+      const res = await get(`${getFacilities_url}?${queryParams.toString()}`, true);
       setFacilities(res.data.facilities);
       setTotalPages(res.data.pagination.totalPages);
       setTotalItems(res.data.pagination.total);
@@ -32,6 +41,7 @@ export const FacilitiesList = () => {
       setIsLoading(false);
     }
   };
+  
 
   const handleEdit = (id) => {
     navigate(`/edit-facility/${id}`);
@@ -70,6 +80,20 @@ export const FacilitiesList = () => {
       >
         Add Facility
       </button>
+      <div className="mb-4 flex items-center gap-3">
+  <input
+    type="text"
+    placeholder="Search facilities..."
+    value={search}
+    onChange={(e) => {
+      setSearch(e.target.value)
+      setCurrentPage(1);
+    } // Reset to first page
+    }
+
+    className="w-full md:w-1/3 border border-gray-300 px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
 
       <div className="w-full bg-white rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
@@ -80,6 +104,7 @@ export const FacilitiesList = () => {
                 <th className="px-6 py-4">Address</th>
                 <th className="px-6 py-4">City, State, Zip</th>
                 <th className="px-6 py-4">Phone</th>
+                <th className="px-6 py-4">Email</th>
                 <th className="px-6 py-4">Overtime Multiplier</th>
                 <th className="px-6 py-4">Actions</th>
               </tr>
@@ -106,6 +131,7 @@ export const FacilitiesList = () => {
                     <td className="px-6 py-4">{facility.address}</td>
                     <td className="px-6 py-4">{facility.city_state_zip}</td>
                     <td className="px-6 py-4">{facility.phone}</td>
+                    <td className="px-6 py-4">{facility.email}</td>
                     <td className="px-6 py-4">{facility.overtime_multiplier}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-4">

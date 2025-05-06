@@ -14,15 +14,16 @@ const Nurses = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [limit, setLimit] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchNurses();
-  }, [currentPage, limit]);
+  }, [currentPage, limit, search]);
 
   const fetchNurses = async () => {
     try {
       setIsLoading(true);
-      const res = await get(`${getNurses_url}?page=${currentPage}&limit=${limit}`, true);
+      const res = await get(`${getNurses_url}?page=${currentPage}&limit=${limit}&search=${search}`, true);
       setNurses(res.data.nurses);
       setTotalPages(res.data.pagination.totalPages);
       setTotalItems(res.data.pagination.total);
@@ -71,6 +72,19 @@ const Nurses = () => {
       >
         Add Nurse
       </button>
+      <div className="mb-4">
+  <input
+    type="text"
+    placeholder="Search nurses..."
+    value={search}
+    onChange={(e) => {
+      setSearch(e.target.value);
+      setCurrentPage(1); // Reset to page 1 on new search
+    }}
+    className="w-full md:w-1/3 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
+
       <div className="w-full bg-white rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-left text-gray-700">
@@ -83,6 +97,7 @@ const Nurses = () => {
                 <th className="px-6 py-4">Rate</th>
                 <th className="px-6 py-4">Shift Dif</th>
                 <th className="px-6 py-4">OT Rate</th>
+                <th className="px-6 py-4">Phone</th>
                 <th className="px-6 py-4">Email</th>
                 <th className="px-6 py-4">Talent ID</th>
                 <th className="px-6 py-4">Actions</th>
@@ -113,6 +128,7 @@ const Nurses = () => {
                     <td className="px-6 py-4">{nurse.rate}</td>
                     <td className="px-6 py-4">{nurse.shift_dif}</td>
                     <td className="px-6 py-4">{nurse.ot_rate}</td>
+                    <td className="px-6 py-4">{nurse.mobile_number}</td>
                     <td className="px-6 py-4">{nurse.email}</td>
                     <td className="px-6 py-4">{nurse.talent_id}</td>
                     <td className="px-6 py-4">
