@@ -1,9 +1,8 @@
 import React from 'react';
-import {Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import LoginPage from '../pages/login';
 import NotFoundPage from '../pages/NotFound';
 import AddFacility from '../pages/addFacility';
-import PrivateRoute from './privateRoute';
 import FacilitiesList from '../pages/facilities';
 import Nurses from '../pages/nurses';
 import AddNurse from '../pages/addNurse';
@@ -12,80 +11,67 @@ import EditFacility from '../pages/editFacility';
 import EditNurse from '../pages/editNurse';
 import SettingsMain from '../pages/settingsMain';
 import BookingCalendar from '../pages/calendar';
+
 const AppRoutes = () => {
   return (
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route
-          path="/add-facility"
-          element={
-            <PrivateRoute>
-              <AddFacility/>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/facilities"
-          element={
-            <PrivateRoute>
-              <FacilitiesList />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/nurses"
-          element={
-            <PrivateRoute>
-              <Nurses/>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/add-nurse"
-          element={
-            <PrivateRoute>
-              <AddNurse/>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/manage-nurse-types"
-          element={
-            <PrivateRoute>
-              <ManageNurses/>
-            </PrivateRoute>
-          }
-        />
-        <Route path="/edit-facility/:id" 
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route
+        path="/add-facility"
         element={
-        <PrivateRoute>
-          <EditFacility />
-        </PrivateRoute>
-        } />
-        <Route path="/edit-nurse/:id" 
+            <AddFacility />
+        }
+      />
+      <Route
+        path="/facilities"
         element={
-        <PrivateRoute>
-          <EditNurse/>
-        </PrivateRoute>
-        } />
-        <Route
-          path="/settings"
-          element={
-            <PrivateRoute>
-              <SettingsMain/>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/bookingscalendar"
-          element={
-            <PrivateRoute>
-              <BookingCalendar/>
-            </PrivateRoute>
-          }
-        />
-        <Route path="*" element={<NotFoundPage/>}/>
-      </Routes>
+            <FacilitiesList />
+        }
+      />
+      <Route
+        path="/nurses"
+        element={
+            <Nurses />
+        }
+      />
+      <Route
+        path="/add-nurse"
+        element={
+            <AddNurse />
+        }
+      />
+      <Route
+        path="/manage-nurse-types"
+        element={
+            <ManageNurses />
+        }
+      />
+      <Route
+        path="/edit-facility/:id"
+        element={
+            <EditFacility />
+        }
+      />
+      <Route
+        path="/edit-nurse/:id"
+        element={
+            <EditNurse />
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+            <SettingsMain />
+        }
+      />
+      <Route
+        path="/bookingscalendar"
+        element={
+            <BookingCalendar />
+        }
+      />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 };
 
