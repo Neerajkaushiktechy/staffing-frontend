@@ -1,7 +1,6 @@
 
 const BACKEND_URL = import.meta.env.VITE_API_URL
 const login_url = `${BACKEND_URL}login`
-const token_verify = `${BACKEND_URL}verify-token`
 const addFacility_url = `${BACKEND_URL}add-facility`
 const editFacility_url = (id) => `${BACKEND_URL}edit-facility/${id}`
 const editNurse_url = (id) => `${BACKEND_URL}edit-nurse/${id}`
@@ -22,7 +21,6 @@ const updateNurseType_url = (id) => `${BACKEND_URL}edit-nurse-type/${id}`
 const getShifts_url = (params) => `${BACKEND_URL}get-shifts?${params.toString()}`
 export{
     login_url,
-    token_verify,
     addFacility_url,
     editFacility_url,
     logout_url,

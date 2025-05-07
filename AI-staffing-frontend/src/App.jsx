@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import AppRoutes from './routes/routes';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,12 +6,41 @@ import Navbar from './components/navbar';
 import Sidebar from './components/sidebar';
 import 'flowbite';
 import { BrowserRouter, useLocation } from 'react-router';
-import { useAuth } from './middleware/AuthContext';
+import { checkAuthentication } from './services/chech_authentication';
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
   const isLoginPage = location.pathname === '/';
+
+  // Function to update authentication state
+  const updateAuthentication = async () => {
+    const authStatus = await checkAuthentication();
+    console.log("isAuthenticated", authStatus);
+    setIsAuthenticated(authStatus);
+  };
+
+  useEffect(() => {
+    // Check authentication on component mount
+    updateAuthentication();
+
+    // Listen for changes in localStorage (e.g., login/logout)
+    const handleStorageChange = () => {
+      updateAuthentication();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Check authentication whenever the route changes
+    updateAuthentication();
+  }, [location]);
 
   return (
     <>
