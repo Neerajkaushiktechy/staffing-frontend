@@ -5,22 +5,22 @@ import { logout_url } from '../urls/adminUrls'
 import { useNavigate } from 'react-router'
 import { toast } from 'react-toastify'
 import user_logo from "../assets/user_logo.png"
-import { useAuth } from '../middleware/AuthContext'
 import { initFlowbite } from 'flowbite'
 
 export const Navbar = () => {
     const navigate = useNavigate()
-    const { setIsAuthenticated } = useAuth()
 
     useEffect(() => {
         initFlowbite();
     }, []);
-
+    const user = JSON.parse(localStorage.getItem("user"))
+    const auth_token = localStorage.getItem("auth_token")
     const handleSignOut = async()=>{
         try {
+            localStorage.removeItem("user")
+            localStorage.removeItem("auth_token")
             const res = await post(logout_url,{},true)
             if(res.data.status==200){
-                setIsAuthenticated(false)
                 navigate('/')
                 toast.success("Logged out successfully")
             }
@@ -46,6 +46,13 @@ export const Navbar = () => {
                     </button>
                     <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
                         <ul className="py-2" aria-labelledby="user-menu-button">
+                        {auth_token && (
+                                <li>
+                                <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                                    {user?.email}
+                                </button>
+                            </li>
+                            )}
                             <li>
                                 <button onClick={handleSignOut} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
                                     Sign out

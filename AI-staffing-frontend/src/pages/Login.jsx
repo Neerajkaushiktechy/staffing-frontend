@@ -3,7 +3,6 @@ import { post } from "../services/apiServices";
 import { login_url } from "../urls/adminUrls";
 import {toast} from 'react-toastify'
 import {useNavigate} from 'react-router'
-import { useAuth } from '../middleware/AuthContext';
 
 const LoginPage = () => {
 
@@ -11,7 +10,6 @@ const LoginPage = () => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState(null)
   const navigate = useNavigate()
-  const { setIsAuthenticated } = useAuth()
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -22,9 +20,10 @@ const LoginPage = () => {
     }
     const data = { email, password };
     const res = await post(login_url, data, true);
+    localStorage.setItem("user", JSON.stringify(res.data.user))
+    localStorage.setItem("auth_token", res.data.token)
     if (res.data.status == 200) {
       toast.success("Login succesful")
-      setIsAuthenticated(true)
       navigate('/facilities')
     }
     if( res.data.status==404){
