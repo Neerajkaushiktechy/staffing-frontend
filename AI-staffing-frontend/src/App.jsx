@@ -16,7 +16,6 @@ function AppContent() {
   // Function to update authentication state
   const updateAuthentication = async () => {
     const authStatus = await checkAuthentication();
-    console.log("isAuthenticated", authStatus);
     setIsAuthenticated(authStatus);
   };
 

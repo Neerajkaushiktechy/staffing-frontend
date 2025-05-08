@@ -103,8 +103,6 @@ export const FacilitiesList = () => {
                 <th className="px-6 py-4">Name</th>
                 <th className="px-6 py-4">Address</th>
                 <th className="px-6 py-4">City, State, Zip</th>
-                <th className="px-6 py-4">Phone</th>
-                <th className="px-6 py-4">Email</th>
                 <th className="px-6 py-4">Overtime Multiplier</th>
                 <th className="px-6 py-4">Actions</th>
               </tr>
@@ -130,8 +128,6 @@ export const FacilitiesList = () => {
                     <td className="px-6 py-4">{facility.name}</td>
                     <td className="px-6 py-4">{facility.address}</td>
                     <td className="px-6 py-4">{facility.city_state_zip}</td>
-                    <td className="px-6 py-4">{facility.phone}</td>
-                    <td className="px-6 py-4">{facility.email}</td>
                     <td className="px-6 py-4">{facility.overtime_multiplier}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-4">
