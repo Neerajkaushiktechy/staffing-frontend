@@ -7,7 +7,6 @@ const post = async(url,data, credentials)=>{
             },
             withCredentials:credentials
         })
-        console.log("POST RESPONSE", response)
         if (response.data.status == 401 || response.data.status == 403) {
             localStorage.removeItem("user")
             localStorage.removeItem("auth_token")
@@ -28,7 +27,6 @@ const get = async(url,credentials)=>{
             },
             withCredentials:credentials
         })
-        console.log("GET RESPONSE", response)
         if (response.data.status == 401 || response.data.status == 403) {
             localStorage.removeItem("user")
             localStorage.removeItem("auth_token")
@@ -49,7 +47,6 @@ const put = async (url, data, credentials) => {
             },
             withCredentials: credentials
         });
-        console.log("PUT RESPONSE", response);
         if (response.data.status == 401 || response.data.status == 403) {
             localStorage.removeItem("user")
             localStorage.removeItem("auth_token")
@@ -70,7 +67,6 @@ const del = async (url, credentials) => {
             },
             withCredentials: credentials
         });
-        console.log("DELETE RESPONSE", response);
         if (response.data.status == 401 || response.data.status == 403) {
             localStorage.removeItem("user")
             localStorage.removeItem("auth_token")

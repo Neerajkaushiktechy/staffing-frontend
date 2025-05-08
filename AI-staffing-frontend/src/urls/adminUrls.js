@@ -19,6 +19,7 @@ const getNurseTypes_url = `${BACKEND_URL}get-nurse-types`
 const deleteNurseType_url = (id) => `${BACKEND_URL}delete-nurse-type/${id}`
 const updateNurseType_url = (id) => `${BACKEND_URL}edit-nurse-type/${id}`
 const getShifts_url = (params) => `${BACKEND_URL}get-shifts?${params.toString()}`
+const deleteCoordinator_url = (id) => `${BACKEND_URL}delete-coordinator/${id}`
 export{
     login_url,
     addFacility_url,
@@ -38,5 +39,6 @@ export{
     getNurseTypes_url,
     deleteNurseType_url,
     updateNurseType_url,
-    getShifts_url
+    getShifts_url,
+    deleteCoordinator_url
 }
