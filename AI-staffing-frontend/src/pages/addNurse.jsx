@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { post } from '../services/apiServices';
-import { addNurse_url } from '../urls/adminUrls';
+import { post,get } from '../services/apiServices';
+import { addNurse_url,getNurseType_url } from '../urls/adminUrls';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+import { useNavigate } from 'react-router-dom';
 const AddNurse = () => {
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [scheduleName, setScheduleName] = useState('');
@@ -17,9 +19,17 @@ const AddNurse = () => {
   const [position, setPosition] = useState('');
   const [location, setLocation] = useState('');
   const [shift, setShift] = useState('');
+  const [nurseTypes, setNurseType] = useState([]);
   const inputStyle =
     'w-full p-3 rounded-lg bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500';
 
+    const getNurseType = async ()=>{
+      const res = await get(getNurseType_url,true)
+      setNurseType(res.data.nurse_types)
+    }
+    useEffect(() => {
+      getNurseType();
+    }, []);
   const handleAddNurse = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{6,14}$/;
@@ -58,6 +68,7 @@ const AddNurse = () => {
     try {
       const res = await post(addNurse_url, formData, true);
       if (res.data.status === 200) {
+        navigate('/nurses');
         toast.success("Nurse added successfully");
         setFirstName('');
         setLastName('');
@@ -71,7 +82,11 @@ const AddNurse = () => {
         setPosition('');
         setLocation('');
         setShift('');
-      } else {
+      } 
+      else if (res.data.status === 400) {
+        toast.error("Nurse with phone number already or email exists");
+      }
+      else {
         toast.error("An error has occurred");
       }
     } catch (error) {
@@ -138,16 +153,23 @@ const AddNurse = () => {
 
         {/* Position and Schedule Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block mb-1 font-medium">Position</label>
-            <input
-              type="text"
-              placeholder="Enter position"
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-              className={inputStyle}
-            />
-          </div>
+        <div>
+      <label className="block mb-1 font-medium">Position</label>
+      <select
+        value={position}
+        onChange={(e) => setPosition(e.target.value)}
+        className={inputStyle}
+      >
+        <option value="" disabled>
+          Select position
+        </option>
+      {nurseTypes.map((type) => (
+          <option key={type.id} value={type.nurse_type}>
+            {type.nurse_type}
+          </option>
+        ))}
+      </select>
+    </div>
           <div>
             <label className="block mb-1 font-medium">Schedule Name</label>
             <input
@@ -219,16 +241,22 @@ const AddNurse = () => {
               className={inputStyle}
             />
           </div> 
+          
           <div>
-            <label className="block mb-1 font-medium">Shift</label>
-            <input
-              type="text"
-              placeholder="Enter shift"
-              value={shift}
-              onChange={(e) => setShift((e.target.value))}
-              className={inputStyle}
-            />
-          </div> 
+      <label className="block mb-1 font-medium">Shift</label>
+      <select
+        value={shift}
+        onChange={(e) => setShift(e.target.value)}
+        className={inputStyle}
+      >
+        <option value="" disabled>
+          Select Shift
+        </option>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+        <option value="NOC">NOC</option>
+      </select>
+    </div>
         </div>
         {/* Submit Button */}
         <div className="pt-4">

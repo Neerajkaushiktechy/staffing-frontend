@@ -5,18 +5,18 @@ import { toast } from 'react-toastify';
 import { Loader } from '../components/loader';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
+import { useNavigate } from 'react-router';
 
 export const AddFacility = () => {
+  const navigate = useNavigate();
   const [nurses, setNurses] = useState([]);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
   const [multiplier, setMultiplier] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [nurseType, setNurseType] = useState([])
-  const [email, setEmail] = useState("");
   const [cityStateZip, setCityStateZip] = useState("");
+  const [coordinators, setCoordinators] = useState([]);
 
   useEffect(() => {
     const getNurseType = async ()=>{
@@ -29,24 +29,28 @@ export const AddFacility = () => {
   const handleSubmit = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{6,14}$/;
-    if (!name || !address || !cityStateZip|| !phone || multiplier === undefined || multiplier === null) {
+    if (!name || !address || !cityStateZip|| multiplier === undefined || multiplier === null) {
       toast.error("Please fill out all facility fields.");
       return;
     }
-        if (!emailRegex.test(email)) {
-          toast.error("Please enter a valid email address");
-          return;
-        }
-    
-        if (!phoneRegex.test(phone)) {
-          toast.error("Please enter a valid 10-digit phone number");
-          return;
+        for (const coordinator of coordinators) {
+          if (coordinator.email){
+            if (!emailRegex.test(coordinator.email)) {
+              toast.error("Please enter a valid email address.");
+              return;
+            }
+          }
+          if (coordinator.phone){
+            if (!phoneRegex.test(coordinator.phone)) {
+              toast.error("Please enter a valid phone number.");
+              return;
+            }
+          }
         }
     if (nurses.length === 0) {
       toast.error("Please select at least one nurse type.");
       return;
     }
-
     for (const nurse of nurses) {
       const requiredFields = [
         nurse.nurseType, nurse.amTimeStart, nurse.amTimeEnd, nurse.pmTimeStart, nurse.pmTimeEnd,
@@ -58,11 +62,28 @@ export const AddFacility = () => {
         return;
       }
     }
+    if (coordinators.length === 0) {  
+      toast.error("Please add at least one coordinator.");
+      return;
+    }
+    for (const coordinator of coordinators) {
+      const requiredFields = [
+        coordinator.firstName, coordinator.lastName, coordinator.email, coordinator.phone
+      ];
+      if (requiredFields.some(field => !field)) {
+        toast.error("Please fill out all coordinator fields.");
+        return;
+      }
+    }
 
     const formData = {
-      name, address, cityStateZip, phone: phone.startsWith('+') ? phone : `+${phone}`, multiplier, email,
+      name, address, cityStateZip, multiplier,
       nurses: nurses.map(nurse => ({ 
         ...nurse
+      })),
+      coordinators: coordinators.map(coordinator => ({
+        ...coordinator,
+        phone: coordinator.phone.startsWith('+') ? coordinator.phone : `+${coordinator.phone}`
       }))
     };
 
@@ -71,16 +92,21 @@ export const AddFacility = () => {
     setIsLoading(false);
 
     if (res.data.status === 200) {
+      navigate("/facilities");
       toast.success("Facility added successfully");
       setAddress("")
       setCityStateZip
       setMultiplier(0)
       setName("")
       setNurses([])
-      setPhone("")
-      setEmail("")
+      setCoordinators([{
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: ""
+      }])
     } else if (res.data.status === 400) {
-      toast.error("Phone number or email already exists");
+      toast.error("Coordinator phone number or email already exists");
     } else if (res.data.status === 500) {
       toast.error("An error has occurred");
     }
@@ -120,6 +146,11 @@ export const AddFacility = () => {
     }
   };
   
+  const handleInputChange = (index, field, value) => {
+  const updatedCoordinators = [...coordinators];
+  updatedCoordinators[index][field] = value;
+  setCoordinators(updatedCoordinators);
+};
 
   return (
     <div className="flex flex-col justify-center items-center pt-10 w-full px-4">
@@ -149,27 +180,59 @@ export const AddFacility = () => {
             className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="space-y-2">
-          <label className="text-gray-700 font-medium">Email</label>
+          <div className="space-y-2">
+            <label className="text-gray-700 font-medium">Multiplier</label>
+            <input type="number" placeholder="Multiplier" value={multiplier} onChange={e => setMultiplier(e.target.value)}
+              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 h-[46px]" />
+          </div>
+        </div>
+
+        <button
+        className="mb-8 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200"
+        onClick={() => setCoordinators([...coordinators, { firstName: "", lastName: "", email: "", phone: "" }])}
+        >
+        Add Coordinator
+      </button>
+      {coordinators.map((coordinator, index) => (
+      <div key={index} className="relative w-full max-w-5xl mt-12 border-t pt-10 space-y-8">
+      <button
+      onClick={() => {
+        const updatedCoordinators = coordinators.filter((_, i) => i !== index);
+        setCoordinators(updatedCoordinators);
+      }}
+      className="absolute top-5 right-5 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
+    >
+      Delete
+    </button>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className="space-y-2">
+          <label className="text-gray-700 font-medium">First Name</label>
           <input
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Enter Coordinator First Name"
+            value={coordinator.firstName}
+            onChange={(e) => handleInputChange(index, "firstName", e.target.value)}
             className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+        <div className="space-y-2">
+          <label className="text-gray-700 font-medium">Last Name</label>
+          <input
+            type="text"
+            placeholder="Enter Coordinator Last Name"
+            value={coordinator.lastName}
+            onChange={(e) => handleInputChange(index, "lastName", e.target.value)}
+            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
-
-        {/* Email Field */}
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-2">
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
             <label className="text-gray-700 font-medium">Phone Number</label>
             <PhoneInput
               country={'us'}
-              value={phone}
-              onChange={setPhone}
+              value={coordinator.phone}
+              onChange={(phone) => handleInputChange(index, "phone", phone)}
               inputClass="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-900 h-[46px] rounded-r-xl"
               buttonClass="bg-blue-50 border border-blue-300 rounded-l-xl hover:bg-blue-100 h-[46px]"
               containerClass="w-full h-[46px]"
@@ -188,13 +251,21 @@ export const AddFacility = () => {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-gray-700 font-medium">Multiplier</label>
-            <input type="number" placeholder="Multiplier" value={multiplier} onChange={e => setMultiplier(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 h-[46px]" />
-          </div>
+          <label className="text-gray-700 font-medium">Email</label>
+          <input
+            type="email"
+            placeholder="Enter email"
+            value={coordinator.email}
+            onChange={(e) => handleInputChange(index, "email", e.target.value)}
+            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
+        </div>
+        <br />
+        </div>
+      ))}
       </div>
-
+      
       <div className="w-full max-w-5xl mt-10 space-y-4">
   <h2 className="text-xl font-semibold">Select Service Types</h2>
   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
