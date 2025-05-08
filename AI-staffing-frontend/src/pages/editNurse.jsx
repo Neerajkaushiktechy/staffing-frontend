@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { get, put } from '../services/apiServices';
-import { getNurseById_url, editNurse_url } from '../urls/adminUrls';
+import { getNurseById_url, editNurse_url, getNurseType_url } from '../urls/adminUrls';
 import { toast } from 'react-toastify';
 import { Loader } from '../components/loader';
 import PhoneInput from 'react-phone-input-2';
@@ -23,6 +23,7 @@ const EditNurse = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [location, setLocation] = useState('');
   const [shift, setShift] = useState('');
+  const [nurseType, setNurseType] = useState([]);
   useEffect(() => {
     const fetchNurseData = async () => {
       try {
@@ -52,8 +53,13 @@ const EditNurse = () => {
     };
 
     fetchNurseData();
+    getNurseType();
   }, [id, navigate]);
 
+  const getNurseType = async ()=>{
+    const res = await get(getNurseType_url,true)
+    setNurseType(res.data.nurse_types)
+  }
   const handleUpdateNurse = async () => {
     // Email and phone validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -96,7 +102,11 @@ const EditNurse = () => {
       if (res.data.status === 200) {
         toast.success("Nurse updated successfully");
         navigate(`/nurses`);
-      } else {
+      } 
+            else if (res.data.status === 400) {
+              toast.error("Nurse with phone number or email already exists");
+            }
+      else {
         toast.error("An error has occurred");
       }
     } catch (error) {
@@ -171,16 +181,23 @@ const EditNurse = () => {
 
         {/* Position and Schedule Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block mb-1 font-medium">Position</label>
-            <input
-              type="text"
-              placeholder="Enter position"
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-              className={inputStyle}
-            />
-          </div>
+        <div>
+      <label className="block mb-1 font-medium">Position</label>
+      <select
+        value={position}
+        onChange={(e) => setPosition(e.target.value)}
+        className={inputStyle}
+      >
+        <option value="" disabled>
+          Select position
+        </option>
+      {nurseType.map((type) => (
+          <option key={type.id} value={type.nurse_type}>
+            {type.nurse_type}
+          </option>
+        ))}
+      </select>
+    </div>
           <div>
             <label className="block mb-1 font-medium">Schedule Name</label>
             <input
@@ -252,15 +269,20 @@ const EditNurse = () => {
             />
           </div> 
           <div>
-            <label className="block mb-1 font-medium">Shift</label>
-            <input
-              type="text"
-              placeholder="Enter shift"
-              value={shift}
-              onChange={(e) => setShift((e.target.value))}
-              className={inputStyle}
-            />
-          </div>
+      <label className="block mb-1 font-medium">Shift</label>
+      <select
+        value={shift}
+        onChange={(e) => setShift(e.target.value)}
+        className={inputStyle}
+      >
+        <option value="" disabled>
+          Select Shift
+        </option>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+        <option value="NOC">NOC</option>
+      </select>
+    </div>
         </div>
         {/* Submit Button */}
         <div className="pt-4">

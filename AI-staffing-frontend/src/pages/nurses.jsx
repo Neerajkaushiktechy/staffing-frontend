@@ -120,7 +120,7 @@ const Nurses = () => {
                 </tr>
               ) : (
                 nurses.map((nurse) => (
-                  <tr key={nurse.talent_id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={nurse.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">{nurse.first_name}</td>
                     <td className="px-6 py-4">{nurse.last_name}</td>
                     <td className="px-6 py-4">{nurse.nurse_type}</td>

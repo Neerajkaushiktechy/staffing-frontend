@@ -2,16 +2,19 @@ import React, { useState } from "react";
 import { post } from "../services/apiServices";
 import { login_url } from "../urls/adminUrls";
 import {toast} from 'react-toastify'
-import {useNavigate} from 'react-router'
+import { useNavigate} from 'react-router'
 
 const LoginPage = () => {
-
+  const navigate = useNavigate()
+  const isAuthenticated = localStorage.getItem("auth_token")
+  if (isAuthenticated) {
+    navigate('/facilities')
+  }
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState(null)
-  const navigate = useNavigate()
-
   const handleLogin = async (e) => {
+
     e.preventDefault()
     setError("")
     if (!email || !password){
