@@ -87,8 +87,6 @@ useEffect(() => {
 
 // Update phone and email when coordinator or coordinators change
 useEffect(() => {
-  console.log("COORDINATOR",coordinator);
-  console.log("COORDINATORS",coordinators);
   if (coordinator && coordinators.length > 0) {
     const selected = coordinators.find((c) => c.id.toString() === coordinator.toString());
     if (selected) {
