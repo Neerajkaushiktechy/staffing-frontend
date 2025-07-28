@@ -16,6 +16,12 @@ const post = async(url,data, credentials)=>{
         console.log("post Response",response)
         return response
     } catch (error) {
+        if (error.response.status == 401 || error.response.status == 403) {
+            localStorage.removeItem("user")
+            localStorage.removeItem("auth_token")
+            window.location.href = "/"
+            return null
+        }
         console.error("ERROR", error)
     }
 }
@@ -37,6 +43,12 @@ const get = async(url,credentials)=>{
         console.log("get Response",response)
         return response
     } catch (error) {
+        if (error.response.status == 401 || error.response.status == 403) {
+            localStorage.removeItem("user")
+            localStorage.removeItem("auth_token")
+            window.location.href = "/"
+            return null
+        }
         console.error("ERROR", error)
     }
 }
@@ -58,6 +70,12 @@ const put = async (url, data, credentials) => {
         console.log("put Response", response)
         return response;
     } catch (error) {
+        if (error.response.status == 401 || error.response.status == 403) {
+            localStorage.removeItem("user")
+            localStorage.removeItem("auth_token")
+            window.location.href = "/"
+            return null
+        }
         console.error("PUT ERROR", error);
     }
 };
@@ -79,6 +97,12 @@ const del = async (url, credentials) => {
         console.log("delete Response", response)
         return response;
     } catch (error) {
+        if (error.response.status == 401 || error.response.status == 403) {
+            localStorage.removeItem("user")
+            localStorage.removeItem("auth_token")
+            window.location.href = "/"
+            return null
+        }
         console.error("DELETE ERROR", error);
     }
 };
