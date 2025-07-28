@@ -61,6 +61,7 @@ const EditNurse = () => {
     setNurseType(res.data.nurse_types)
   }
   const handleUpdateNurse = async () => {
+    const negativeFields = [];
     // Email and phone validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?[1-9]\d{6,14}$/;
@@ -77,6 +78,15 @@ const EditNurse = () => {
 
     if (!phoneRegex.test(phone)) {
       toast.error("Please enter a valid phone number");
+      return;
+    }
+
+    if (rate < 0) negativeFields.push("Rate");
+    if (shiftDif < 0) negativeFields.push("Shift Dif");
+    if (otRate < 0) negativeFields.push("OT Rate");
+    if (talentId < 0) negativeFields.push("Talent ID");
+    if (negativeFields.length > 0) {
+      toast.error(`${negativeFields.join(", ")} cannot be negative`);
       return;
     }
 
@@ -216,9 +226,10 @@ const EditNurse = () => {
             <label className="block mb-1 font-medium">Rate</label>
             <input
               type="number"
+              min={0}
               placeholder="Enter rate"
               value={rate}
-              onChange={(e) => setRate(Number(e.target.value))}
+              onChange={(e) => setRate(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>
@@ -226,9 +237,10 @@ const EditNurse = () => {
             <label className="block mb-1 font-medium">Shift Dif</label>
             <input
               type="number"
+              min={0}
               placeholder="Enter shift dif"
               value={shiftDif}
-              onChange={(e) => setShiftDif(Number(e.target.value))}
+              onChange={(e) => setShiftDif(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>
@@ -240,9 +252,10 @@ const EditNurse = () => {
             <label className="block mb-1 font-medium">OT Rate</label>
             <input
               type="number"
+              min={0}
               placeholder="Enter OT rate"
               value={otRate}
-              onChange={(e) => setOtRate(Number(e.target.value))}
+              onChange={(e) => setOtRate(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>
@@ -251,8 +264,9 @@ const EditNurse = () => {
             <input
               type="number"
               placeholder="Enter Talent ID"
+              min={0}
               value={talentId}
-              onChange={(e) => setTalentId(Number(e.target.value))}
+              onChange={(e) => setTalentId(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>

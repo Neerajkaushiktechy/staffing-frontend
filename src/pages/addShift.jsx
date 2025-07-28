@@ -5,6 +5,10 @@ import { addShift_url,getAvailableNurses_url,getCoordinatorsByFacility_url,getFa
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useNavigate } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
+
 const AddShift = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -22,7 +26,6 @@ const AddShift = () => {
   const [additionalNotes, setAdditionalNotes] = useState('');
   const inputStyle =
     'w-full p-3 rounded-lg bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500';
-    const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
 
     const getNurseType = async ()=>{
       const res = await get(getNurseType_url,true)
@@ -61,7 +64,8 @@ const AddShift = () => {
     
     const fetchAvailableNurses = async () => {
         if (facility, position, scheduleDate, shift){
-            const res = await get(`${getAvailableNurses_url}?facility_id=${facility}&nurse_type=${position}&date=${scheduleDate}&shift=${shift}`, true);
+          const selectedDate = scheduleDate ? format(scheduleDate, 'yyyy-MM-dd') : '';
+            const res = await get(`${getAvailableNurses_url}?facility_id=${facility}&nurse_type=${position}&date=${selectedDate}&shift=${shift}`, true);
             if (res.data.status === 200) {
                 setNurses(res.data.nurses);
             }
@@ -71,7 +75,6 @@ const AddShift = () => {
         const selectedId = e.target.value;
         setCoordinator(selectedId);
         const selected = coordinators.find(c => c.id == selectedId);
-        console.log("SELECTED",selected);
         if (selected) {
           setEmail(selected.coordinator_email);
           setPhone(selected.coordinator_phone);
@@ -87,12 +90,12 @@ const AddShift = () => {
       toast.error("Please fill all shift fields");
       return;
     }
-
+    const selectedDate = scheduleDate ? format(scheduleDate, 'yyyy-MM-dd') : '';
     const formData = {
       facility,
       coordinator,
       position,
-      scheduleDate,
+      scheduleDate: selectedDate,
       nurse,
       shift,
       additionalNotes
@@ -172,98 +175,99 @@ const AddShift = () => {
         {/* Phone and Email */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
   <div>
-    <label className="block mb-1 font-medium">Phone</label>
-    <PhoneInput
-      country={'us'}
-      value={phone}
-      onChange={() => {}} // prevent changes
-      disabled
-      inputClass="!w-full !h-[46px] !p-3 !pl-12 !rounded-lg !bg-blue-50 !border !border-blue-300 !focus:outline-none"
-      buttonClass="!h-[46px] !bg-blue-50 !border !border-blue-300 !rounded-l-lg"
-      containerClass="!w-full"
-      dropdownClass="!bg-white !border !border-blue-300 !rounded-lg !shadow-lg"
-      searchClass="!p-2 !border-b !border-blue-200"
-      searchPlaceholder="Search country..."
-    />
-  </div>
-  <div>
-    <label className="block mb-1 font-medium">Email</label>
-    <input
-      type="email"
-      placeholder="Enter email"
-      value={email}
-      readOnly
-      className={inputStyle}
-    />
-  </div>
-</div>
+            <label className="block mb-1 font-medium">Phone</label>
+            <PhoneInput
+              country={"us"}
+              value={phone}
+              onChange={() => {}} // prevent changes
+              disabled
+              inputClass="!w-full !h-[46px] !p-3 !pl-12 !rounded-lg !bg-blue-50 !border !border-blue-300 !focus:outline-none"
+              buttonClass="!h-[46px] !bg-blue-50 !border !border-blue-300 !rounded-l-lg"
+              containerClass="!w-full"
+              dropdownClass="!bg-white !border !border-blue-300 !rounded-lg !shadow-lg"
+              searchClass="!p-2 !border-b !border-blue-200"
+              searchPlaceholder="Search country..."
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Email</label>
+            <input
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              readOnly
+              className={inputStyle}
+            />
+          </div>
+        </div>
 
         {/* Position and Schedule Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-      <label className="block mb-1 font-medium">Position</label>
-      <select
-        value={position}
-        onChange={(e) => setPosition(e.target.value)}
-        className={inputStyle}
-      >
-        <option value="" disabled>
-          Select position
-        </option>
-      {nurseTypes.map((type) => (
-          <option key={type.id} value={type.nurse_type}>
-            {type.nurse_type}
-          </option>
-        ))}
-      </select>
-    </div>
-    <div>
-  <label className="block mb-1 font-medium">Schedule Date</label>
-  <input
-    type="date"
-    value={scheduleDate}
-    onChange={(e) => setScheduleDate(e.target.value)}
-    min={today}
-    className={inputStyle}
-  />
-</div>
-
+          <div>
+            <label className="block mb-1 font-medium">Position</label>
+            <select
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+              className={inputStyle}
+            >
+              <option value="" disabled>
+                Select position
+              </option>
+              {nurseTypes.map((type) => (
+                <option key={type.id} value={type.nurse_type}>
+                  {type.nurse_type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Schedule Date</label>
+            <DatePicker
+              selected={scheduleDate}
+              onChange={(date) => setScheduleDate(date)}
+              dateFormat="MM-dd-yyyy"
+              className={inputStyle}
+              placeholderText="MM-DD-YYYY"
+              minDate={new Date()}
+            />
+          </div>
+          
         </div>
 
         {/* Rate and Shift Dif */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-      <label className="block mb-1 font-medium">Shift</label>
-      <select
-        value={shift}
-        onChange={(e) => setShift(e.target.value)}
-        className={inputStyle}
-      >
-        <option value="" disabled>
-          Select Shift
-        </option>
-        <option value="AM">AM</option>
-        <option value="PM">PM</option>
-        <option value="NOC">NOC</option>
-      </select>
-    </div>
-    <div>
-      <label className="block mb-1 font-medium">Nurses</label>
-      <select
-        value={nurse}
-        onChange={(e) => setNurse(e.target.value)}
-        className={inputStyle}
-      >
-        <option value="" disabled>
-          Select Nurse
-        </option>
-      {nurses.map((nurse) => (
-          <option key={nurse.id} value={nurse.id}>
-            {nurse.first_name} {nurse.last_name}
-          </option>
-        ))}
-      </select>
-    </div>
+          <div>
+            <label className="block mb-1 font-medium">Shift</label>
+            <select
+              value={shift}
+              onChange={(e) => setShift(e.target.value)}
+              className={inputStyle}
+            >
+              <option value="" disabled>
+                Select Shift
+              </option>
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+              <option value="NOC">NOC</option>
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Nurses</label>
+            <select
+              value={nurse}
+              onChange={(e) => setNurse(e.target.value)}
+              className={inputStyle}
+            >
+              <option value="" disabled>
+                Select Nurse
+              </option>
+              {nurses.map((nurse) => (
+                <option key={nurse.id} value={nurse.id}>
+                  {nurse.first_name} {nurse.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Additional Notes */}

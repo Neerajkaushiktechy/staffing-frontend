@@ -13,7 +13,9 @@ import {
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { useNavigate, useParams } from 'react-router-dom';
-
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 const EditShift = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -33,7 +35,6 @@ const EditShift = () => {
   const [additionalNotes, setAdditionalNotes] = useState('');
   const inputStyle =
     'w-full p-3 rounded-lg bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500';
-  const today = new Date().toISOString().split('T')[0];
   const allNurses = assignedNurse
   ? [assignedNurse, ...nurses.filter((n) => n.id !== assignedNurse.id)]
   : nurses;
@@ -104,8 +105,9 @@ useEffect(() => {
 
   const fetchAvailableNurses = async () => {
     if (facility && position && scheduleDate && shift) {
+      const selectedDate = scheduleDate ? format(scheduleDate, 'yyyy-MM-dd') : '';
       const res = await get(
-        `${getAvailableNurses_url}?facility_id=${facility}&nurse_type=${position}&date=${scheduleDate}&shift=${shift}`,
+        `${getAvailableNurses_url}?facility_id=${facility}&nurse_type=${position}&date=${selectedDate}&shift=${shift}`,
         true
       );
       console.log("NURSE AVAILABLE",res);
@@ -125,12 +127,12 @@ useEffect(() => {
       toast.error('Please fill all shift fields');
       return;
     }
-
+    const selectedDate = scheduleDate ? format(scheduleDate, 'yyyy-MM-dd') : '';
     const formData = {
       facility,
       coordinator,
       position,
-      scheduleDate,
+      scheduleDate: selectedDate,
       nurse,
       shift,
       additionalNotes
@@ -276,13 +278,16 @@ useEffect(() => {
           </div>
           <div>
             <label className="block mb-1 font-medium">Schedule Date</label>
-            <input
-              type="date"
-              value={scheduleDate}
-              onChange={(e) => setScheduleDate(e.target.value)}
-              min={today}
-              className={inputStyle}
-            />
+            <div className="w-full">
+              <DatePicker
+                selected={scheduleDate}
+                onChange={(date) => setScheduleDate(date)}
+                dateFormat="MM-dd-yyyy"
+                className={inputStyle}
+                placeholderText="MM-DD-YYYY"
+                minDate={new Date()}
+              />
+            </div>
           </div>
         </div>
 
@@ -312,7 +317,7 @@ useEffect(() => {
             </select>
           </div>
         </div>
-                <div>
+        <div>
           <label className="block mb-1 font-medium">Additional Notes</label>
           <textarea
             value={additionalNotes}

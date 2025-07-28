@@ -5,6 +5,9 @@ import { del, get } from '../services/apiServices';
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { MdNotificationsActive } from 'react-icons/md';
+import { STATUS_TYPES, NURSE_TYPES, SHIFT_TYPES } from "../constants/constant";
+
 import { toast } from 'react-toastify';
 import bot_logo from "../assets/bot_logo.png"
 import admin_logo from "../assets/admin_logo.png"
@@ -17,24 +20,36 @@ const Shifts = () => {
     const [totalItems, setTotalItems] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [shifts, setShifts] = useState([]);
+    const [statusFilter, setStatusFilter] = useState("All");
+    const [nurseTypeFilter, setNurseTypeFilter] = useState("All");
+    const [shiftTypeFilter, setShiftTypeFilter] = useState("All");
 
-    const fetchAllShift = async () => {
+      const fetchAllShift = async () => {
         try {
           setIsLoading(true);
-          const res = await get(`${getAllShifts_url}?page=${currentPage}&limit=${limit}&search=${search}`, true);
+          const queryParams = new URLSearchParams({
+            page: currentPage,
+            limit,
+            search,
+            status: statusFilter !== "All" ? statusFilter : "",
+            nurse_type: nurseTypeFilter !== "All" ? nurseTypeFilter : "",
+            shift_type: shiftTypeFilter !== "All" ? shiftTypeFilter : "",
+          });
+          const res = await get(`${getAllShifts_url}?${queryParams}`, true);
           setShifts(res.data.shifts);
           setTotalPages(res.data.totalPages);
           setTotalItems(res.data.total);
         } catch (error) {
-          console.error("Error fetching nurses:", error);
+          console.error("Error fetching shifts:", error);
         } finally {
           setIsLoading(false);
         }
       };
 
-        useEffect(() => {
-            fetchAllShift();
-        }, [currentPage, limit, search]);
+    useEffect(() => {
+      fetchAllShift();
+    }, [currentPage,limit,search,statusFilter,nurseTypeFilter,shiftTypeFilter]);
+
     const handleEdit = async(id)=>{
         navigate(`/edit-shift/${id}`);
     }
@@ -64,25 +79,73 @@ const Shifts = () => {
       };
   return (
     <div className="p-6">
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-10">Shifts</h1>
-      <button
-        className="mb-8 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200"
-        onClick={() => navigate('/add-shifts')}
-      >
-        Add Shifts
-      </button>
+      <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-10">
+        Shifts
+      </h1>
+      <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
+        <div className="flex flex-wrap gap-3 items-center">
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {STATUS_TYPES.map((status) => (
+              <option key={status.value} value={status.value}>
+                {status.label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={nurseTypeFilter}
+            onChange={(e) => {
+              setNurseTypeFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {NURSE_TYPES.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={shiftTypeFilter}
+            onChange={(e) => {
+              setShiftTypeFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {SHIFT_TYPES.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200"
+          onClick={() => navigate("/add-shifts")}
+        >
+          Add Shifts
+        </button>
+      </div>
       <div className="mb-4">
-  <input
-    type="text"
-    placeholder="Search shifts..."
-    value={search}
-    onChange={(e) => {
-      setSearch(e.target.value);
-      setCurrentPage(1); // Reset to page 1 on new search
-    }}
-    className="w-full md:w-1/3 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+        <input
+          type="text"
+          placeholder="Search shifts..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1); // Reset to page 1 on new search
+          }}
+          className="w-full md:w-1/3 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
 
       <div className="w-full bg-white rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
@@ -92,10 +155,11 @@ const Shifts = () => {
                 <th className="px-6 py-4">Nurse Name</th>
                 <th className="px-6 py-4">Nurse Type</th>
                 <th className="px-6 py-4">Shift Type</th>
+                <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4">Shift Status</th>
                 <th className="px-6 py-4">Facility Name</th>
                 <th className="px-6 py-4">Coordinator Name</th>
-                <th className='px-6 py-4'>Booked By</th>
+                <th className="px-6 py-4">Booked By</th>
                 <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
@@ -110,38 +174,76 @@ const Shifts = () => {
                 </tr>
               ) : shifts.length === 0 ? (
                 <tr>
-                  <td colSpan="10" className="px-6 py-4 text-center text-gray-500">
-                    No nurses found
+                  <td
+                    colSpan="10"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
+                    No shifts found
                   </td>
                 </tr>
               ) : (
                 shifts.map((shift) => (
-                  <tr key={shift.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">{shift.nurse_name || "Not Assigned"}</td>
+                  <tr
+                    key={shift.id}
+                    className={`hover:bg-gray-50 transition-colors ${
+                      (!shift.nurse_name || shift.nurse_name.trim() === "") &&
+                      shift.status === "open"
+                        ? "bg-red-100 hover:bg-red-100"
+                        : ""
+                    }`}
+                  >
+                    <td className="px-6 py-4">
+                      {shift.nurse_name || "Not Assigned"}
+                    </td>
                     <td className="px-6 py-4">{shift.nurse_type}</td>
                     <td className="px-6 py-4">{shift.shift}</td>
+                    <td className="px-6 py-4">
+                      {shift.date
+                        ? new Date(shift.date)
+                            .toLocaleDateString("en-GB")
+                            .replace(/\//g, "-")
+                        : "—"}
+                    </td>
                     <td className="px-6 py-4">{shift.status}</td>
                     <td className="px-6 py-4">{shift.facility_name}</td>
                     <td className="px-6 py-4">{shift.coordinator_name}</td>
                     <td className="px-6 py-4">
-                      {shift.booked_by === "bot" ? <img className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" src={bot_logo} alt='nurses logo'>
-                    </img> : <img className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" src={admin_logo} alt='nurses logo'>
-                    </img>}
+                      {shift.booked_by === "bot" ? (
+                        <img
+                          className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                          src={bot_logo}
+                          alt="nurses logo"
+                        ></img>
+                      ) : (
+                        <img
+                          className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                          src={admin_logo}
+                          alt="nurses logo"
+                        ></img>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-4">
-                        <button 
+                        <button
                           className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-colors"
                           onClick={() => handleEdit(shift.id)}
                         >
                           <FaEdit className="w-5 h-5" />
                         </button>
-                        <button 
+                        <button
                           className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-full transition-colors"
                           onClick={() => handleDelete(shift.id)}
                         >
                           <MdDelete className="w-5 h-5" />
                         </button>
+                        {shift.status === "open" && (
+                          <button
+                            className="relative p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-100 rounded-full transition duration-300"
+                            // onClick={() => handleSendMessage(shift.id)}
+                          >
+                            <MdNotificationsActive className="w-5 h-5 animate-pulse" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

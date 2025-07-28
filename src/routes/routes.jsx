@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import LoginPage from '../pages/login';
+import LoginPage from '../pages/Login';
 import NotFoundPage from '../pages/NotFound';
 import AddFacility from '../pages/addFacility';
 import FacilitiesList from '../pages/facilities';

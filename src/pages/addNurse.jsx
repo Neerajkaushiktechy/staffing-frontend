@@ -190,7 +190,7 @@ const AddNurse = () => {
               type="number"
               placeholder="Enter rate"
               value={rate}
-              onChange={(e) => setRate(Number(e.target.value))}
+              onChange={(e) => setRate(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>
@@ -200,7 +200,7 @@ const AddNurse = () => {
               type="number"
               placeholder="Enter shift dif"
               value={shiftDif}
-              onChange={(e) => setShiftDif(Number(e.target.value))}
+              onChange={(e) => setShiftDif(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>
@@ -214,7 +214,7 @@ const AddNurse = () => {
               type="number"
               placeholder="Enter OT rate"
               value={otRate}
-              onChange={(e) => setOtRate(Number(e.target.value))}
+              onChange={(e) => setOtRate(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>
@@ -224,7 +224,7 @@ const AddNurse = () => {
               type="number"
               placeholder="Enter Talent ID"
               value={talentId}
-              onChange={(e) => setTalentId(Number(e.target.value))}
+              onChange={(e) => setTalentId(e.target.value === '' ? '' : Number(e.target.value))}
               className={inputStyle}
             />
           </div>
