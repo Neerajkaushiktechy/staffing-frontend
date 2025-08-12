@@ -273,7 +273,10 @@ const Shifts = () => {
                                         }`}
                                     >
                                         <td className='px-6 py-4'>
-                                            {shift.nurse_name || 'Not Assigned'}
+                                            {shift.nurse_name &&
+                                            shift.nurse_name.trim() !== ''
+                                                ? shift.nurse_name
+                                                : '--'}
                                         </td>
                                         <td className='px-6 py-4'>
                                             {shift.nurse_type}
