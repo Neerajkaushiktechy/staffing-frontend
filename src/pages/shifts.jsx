@@ -94,7 +94,7 @@ const Shifts = () => {
                 true
             );
             if (res.data.status === 200) {
-                toast.success('Shift Notication send  successfully');
+                toast.success('Shift Notification sent successfully.');
             }
         } catch (error) {
             console.error('Error send notific shift:', error);
