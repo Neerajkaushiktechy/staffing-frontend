@@ -286,11 +286,11 @@ const Shifts = () => {
                                         </td>
                                         <td className='px-6 py-4'>
                                             {shift.date
-                                                ? new Date(shift.date)
-                                                      .toLocaleDateString(
-                                                          'en-GB'
-                                                      )
-                                                      .replace(/\//g, '-')
+                                                ? shift.date
+                                                      .split('T')[0]
+                                                      .split('-')
+                                                      .reverse()
+                                                      .join('-') // YYYY-MM-DD → DD-MM-YYYY
                                                 : '—'}
                                         </td>
                                         <td className='px-6 py-4'>
