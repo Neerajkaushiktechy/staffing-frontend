@@ -1,57 +1,57 @@
-import axios from 'axios'
-const post = async(url,data, credentials)=>{
+import axios from 'axios';
+const post = async (url, data, credentials) => {
     try {
-        const response = await axios.post(url,data,{
-            headers:{
-                'Content-Type':'application/json',
+        const response = await axios.post(url, data, {
+            headers: {
+                'Content-Type': 'application/json',
             },
-            withCredentials:credentials
-        })
+            withCredentials: credentials,
+        });
         if (response.data.status == 401 || response.data.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.log("post Response",response)
-        return response
+        console.log('post Response', response);
+        return response;
     } catch (error) {
         if (error.response.status == 401 || error.response.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.error("ERROR", error)
+        throw error;
     }
-}
+};
 
-const get = async(url,credentials)=>{
+const get = async (url, credentials) => {
     try {
-        const response = await axios.get(url,{
-            headers:{
-                'Content-Type':'application/json',
+        const response = await axios.get(url, {
+            headers: {
+                'Content-Type': 'application/json',
             },
-            withCredentials:credentials
-        })
+            withCredentials: credentials,
+        });
         if (response.data.status == 401 || response.data.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.log("get Response",response)
-        return response
+        console.log('get Response', response);
+        return response;
     } catch (error) {
         if (error.response.status == 401 || error.response.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.error("ERROR", error)
+        console.error('ERROR', error);
     }
-}
+};
 
 const put = async (url, data, credentials) => {
     try {
@@ -59,24 +59,24 @@ const put = async (url, data, credentials) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            withCredentials: credentials
+            withCredentials: credentials,
         });
         if (response.data.status == 401 || response.data.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.log("put Response", response)
+        console.log('put Response', response);
         return response;
     } catch (error) {
         if (error.response.status == 401 || error.response.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.error("PUT ERROR", error);
+        throw error;
     }
 };
 
@@ -86,29 +86,24 @@ const del = async (url, credentials) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            withCredentials: credentials
+            withCredentials: credentials,
         });
         if (response.data.status == 401 || response.data.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.log("delete Response", response)
+        console.log('delete Response', response);
         return response;
     } catch (error) {
         if (error.response.status == 401 || error.response.status == 403) {
-            localStorage.removeItem("user")
-            localStorage.removeItem("auth_token")
-            window.location.href = "/"
-            return null
+            localStorage.removeItem('user');
+            localStorage.removeItem('auth_token');
+            window.location.href = '/';
+            return null;
         }
-        console.error("DELETE ERROR", error);
+        console.error('DELETE ERROR', error);
     }
 };
-export{
-    post,
-    get,
-    put,
-    del
-}
+export { post, get, put, del };
