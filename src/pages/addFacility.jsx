@@ -48,35 +48,38 @@ export const AddFacility = () => {
           }
         }
     if (nurses.length === 0) {
-      toast.error("Please select at least one nurse type.");
+      toast.error('Please select at least one nurse type.');
       return;
     }
     for (const nurse of nurses) {
       const requiredFields = [
         nurse.nurseType, nurse.amTimeStart, nurse.amTimeEnd, nurse.pmTimeStart, nurse.pmTimeEnd,
-        nurse.nocTimeStart, nurse.nocTimeEnd, nurse.amMealStart, nurse.amMealEnd,
-        nurse.pmMealStart, nurse.pmMealEnd, nurse.nocMealStart, nurse.nocMealEnd, nurse.rate
+        nurse.nocTimeStart, nurse.nocTimeEnd, nurse.amMealStart, nurse.amMealEnd,        
+        nurse.pmMealStart, nurse.pmMealEnd,nurse.nocMealStart,nurse.nocMealEnd,nurse.rate,
       ];
-      if (requiredFields.some(field => !field)) {
-        toast.error("Please fill out all nurse shift fields.");
+      if (requiredFields.some((field) => !field)) {
+        toast.error('Please fill out all nurse shift fields.');
         return;
       }
     }
-    if (coordinators.length === 0) {  
-      toast.error("Please add at least one coordinator.");
+    if (coordinators.length === 0) {
+      toast.error('Please add at least one coordinator.');
       return;
     }
     for (const coordinator of coordinators) {
       const requiredFields = [
-        coordinator.firstName, coordinator.lastName, coordinator.email, coordinator.phone
+        coordinator.firstName,
+ coordinator.lastName,
+  coordinator.email,
+ coordinator.phone,
       ];
-      if (requiredFields.some(field => !field)) {
+      if (requiredFields.some((field) => !field)) {
         toast.error("Please fill out all coordinator fields.");
         return;
       }
     }
 
-    const formData = {
+     const formData = {
       name, address, cityStateZip, multiplier,
       nurses: nurses.map(nurse => ({ 
         ...nurse
@@ -87,30 +90,40 @@ export const AddFacility = () => {
       }))
     };
 
-    setIsLoading(true);
-    const res = await post(addFacility_url, formData, true);
-    setIsLoading(false);
+        setIsLoading(true);
+        try {
+            const res = await post(addFacility_url, formData, true);
+            setIsLoading(false);
 
-    if (res.data.status === 200) {
-      navigate("/facilities");
-      toast.success("Facility added successfully");
-      setAddress("")
-      setCityStateZip
-      setMultiplier(0)
-      setName("")
-      setNurses([])
-      setCoordinators([{
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: ""
-      }])
-    } else if (res.data.status === 400) {
-      toast.error("Coordinator phone number or email already exists");
-    } else if (res.data.status === 500) {
-      toast.error("An error has occurred");
-    }
-  };
+            if (res.data.status === 200) {
+                navigate("/facilities");
+                toast.success('Facility added successfully');
+                toast.success("Facility added successfully");
+                setAddress("")
+                setCityStateZip
+                setMultiplier(0)
+                setName("")
+                setNurses([])
+                setCoordinators([{
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phone: ""
+                }])
+            } else if (res.data.status === 400) {
+                toast.error('Coordinator phone number or email already exists');
+            } else if (res.data.status === 500) {
+                toast.error('An error has occurred');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(
+                error.response?.data?.message || 'Failed to add facility'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
   const handleNurseChange = (index, field, value) => {
     const updated = [...nurses];
@@ -145,7 +158,7 @@ export const AddFacility = () => {
       ]);
     }
   };
-  
+
   const handleInputChange = (index, field, value) => {
   const updatedCoordinators = [...coordinators];
   updatedCoordinators[index][field] = value;
@@ -153,184 +166,325 @@ export const AddFacility = () => {
 };
 
   return (
-    <div className="flex flex-col justify-center items-center pt-10 w-full px-4">
-      <h1 className="text-4xl md:text-5xl font-bold mb-10">Add Facility</h1>
+    <div className='flex flex-col justify-center items-center pt-10 w-full px-4'>
+      <h1 className='text-4xl md:text-5xl font-bold mb-10'>Add Facility</h1>
 
-      <div className="w-full max-w-5xl space-y-6">
-        <div className="space-y-2">
-          <label className="text-gray-700 font-medium">Facility Name</label>
-          <input type="text" placeholder="Facility Name" value={name} onChange={e => setName(e.target.value)}
-            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-gray-700 font-medium">Address</label>
-          <input type="text" placeholder="Address" value={address} onChange={e => setAddress(e.target.value)}
-            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <div className='w-full max-w-5xl space-y-6'>
+        <div className='space-y-2'>
+          <label className='text-gray-700 font-medium'>Facility Name</label>
+          <input type='text' placeholder='Facility Name'  value={name} onChange={(e) => setName(e.target.value)}            className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+ />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 space-y-2">
-          <label className="text-gray-700 font-medium">City, State, ZIP</label>
-          <input
-            type="text"
-            placeholder="Enter City, State, ZIP (e.g., Los Angeles, CA 90001)"
-            value={cityStateZip}
-            onChange={(e) => setCityStateZip(e.target.value)}
-            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">Multiplier</label>
-            <input type="number" placeholder="Multiplier" value={multiplier} onChange={e => setMultiplier(e.target.value)}
-              className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 h-[46px]" />
-          </div>
-        </div>
+                <div className='space-y-2'>
+                    <label className='text-gray-700 font-medium'>Address</label>
+                    <input
+                        type='text'
+                        placeholder='Address'
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    />
+                </div>
 
-        <button
-        className="mb-8 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200"
-        onClick={() => setCoordinators([...coordinators, { firstName: "", lastName: "", email: "", phone: "" }])}
-        >
-        Add Coordinator
-      </button>
-      {coordinators.map((coordinator, index) => (
-      <div key={index} className="relative w-full max-w-5xl mt-12 border-t pt-10 space-y-8">
-      <button
-      onClick={() => {
-        const updatedCoordinators = coordinators.filter((_, i) => i !== index);
-        setCoordinators(updatedCoordinators);
-      }}
-      className="absolute top-5 right-5 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
-    >
-      Delete
-    </button>
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-      <div className="space-y-2">
-          <label className="text-gray-700 font-medium">First Name</label>
-          <input
-            type="text"
-            placeholder="Enter Coordinator First Name"
-            value={coordinator.firstName}
-            onChange={(e) => handleInputChange(index, "firstName", e.target.value)}
-            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="text-gray-700 font-medium">Last Name</label>
-          <input
-            type="text"
-            placeholder="Enter Coordinator Last Name"
-            value={coordinator.lastName}
-            onChange={(e) => handleInputChange(index, "lastName", e.target.value)}
-            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-gray-700 font-medium">Phone Number</label>
-            <PhoneInput
-              country={'us'}
-              value={coordinator.phone}
-              onChange={(phone) => handleInputChange(index, "phone", phone)}
-              inputClass="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-900 h-[46px] rounded-r-xl"
-              buttonClass="bg-blue-50 border border-blue-300 rounded-l-xl hover:bg-blue-100 h-[46px]"
-              containerClass="w-full h-[46px]"
-              dropdownClass="bg-white border border-blue-300 rounded-xl shadow-lg"
-              searchClass="p-2 border-b border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              searchPlaceholder="Search country..."
-              inputProps={{
-                className: "w-full h-full bg-blue-50 border border-blue-300 text-blue-900 text-base pl-12 h-[46px] rounded-r-xl"
-              }}
-              buttonProps={{
-                className: "bg-blue-50 border border-blue-300 border-r-0 rounded-l-xl h-[46px]"
-              }}
-              dropdownProps={{
-                className: "bg-white border border-blue-300 rounded-xl shadow-lg"
-              }}
-            />
-          </div>
-          <div className="space-y-2">
-          <label className="text-gray-700 font-medium">Email</label>
-          <input
-            type="email"
-            placeholder="Enter email"
-            value={coordinator.email}
-            onChange={(e) => handleInputChange(index, "email", e.target.value)}
-            className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        </div>
-        <br />
-        </div>
-      ))}
-      </div>
-      
-      <div className="w-full max-w-5xl mt-10 space-y-4">
-  <h2 className="text-xl font-semibold">Select Service Types</h2>
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    {nurseType.map((type, i) => (
-      <label key={i} className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          checked={!!nurses.find(n => n.nurseType === type.nurse_type)}
-          onChange={() => handleToggleNurseType(type.nurse_type)}
-        />
-        <span>{type.nurse_type}</span>
-      </label>
-    ))}
-  </div>
-</div>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                    <div className='md:col-span-2 space-y-2'>
+                        <label className='text-gray-700 font-medium'>
+                            City, State, ZIP
+                        </label>
+                        <input
+                            type='text'
+                            placeholder='Enter City, State, ZIP (e.g., Los Angeles, CA 90001)'
+                            value={cityStateZip}
+                            onChange={(e) => setCityStateZip(e.target.value)}
+                            className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        />
+                    </div>
+                    <div className='space-y-2'>
+                        <label className='text-gray-700 font-medium'>
+                            Multiplier
+                        </label>
+                        <input
+                            type='number'
+                            placeholder='Multiplier'
+                            value={multiplier}
+                            onChange={(e) => setMultiplier(e.target.value)}
+                            className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 h-[46px]'
+                        />
+                    </div>
+                </div>
 
-{nurses.map((nurse, index) => (
-  <div key={index} className="w-full max-w-5xl mt-12 border-t pt-10 space-y-8">
-    <h3 className="text-lg font-semibold mb-4">Enter Details for {nurse.nurseType} Nurse</h3>
-    {nurse.nurseType && (
-      <>
-        {/* Shifts */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {['AM', 'PM', 'NOC'].map((shift) => (
-            <div key={shift}>
-              <label className="text-gray-700 font-medium">{shift} Start</label>
-              <input type="time" value={nurse[`${shift.toLowerCase()}TimeStart`]}
-                onChange={e => handleNurseChange(index, `${shift.toLowerCase()}TimeStart`, e.target.value)}
-                className="w-full p-3 mb-2 rounded-xl bg-blue-50 border border-blue-300" />
-              <label className="text-gray-700 font-medium">{shift} End</label>
-              <input type="time" value={nurse[`${shift.toLowerCase()}TimeEnd`]}
-                onChange={e => handleNurseChange(index, `${shift.toLowerCase()}TimeEnd`, e.target.value)}
-                className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300" />
+                <button
+                    className='mb-8 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200'
+                    onClick={() =>
+                        setCoordinators([
+                            ...coordinators,
+                            {
+                                firstName: '',
+                                lastName: '',
+                                email: '',
+                                phone: '',
+                            },
+                        ])
+                    }
+                >
+                    Add Coordinator
+                </button>
+                {coordinators.map((coordinator, index) => (
+                    <div
+                        key={index}
+                        className='relative w-full max-w-5xl mt-12 border-t pt-10 space-y-8'
+                    >
+                        <button
+                            onClick={() => {
+                                const updatedCoordinators = coordinators.filter(
+                                    (_, i) => i !== index
+                                );
+                                setCoordinators(updatedCoordinators);
+                            }}
+                            className='absolute top-5 right-5 bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition'
+                        >
+                            Delete
+                        </button>
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                            <div className='space-y-2'>
+                                <label className='text-gray-700 font-medium'>
+                                    First Name
+                                </label>
+                                <input
+                                    type='text'
+                                    placeholder='Enter Coordinator First Name'
+                                    value={coordinator.firstName}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            index,
+                                            'firstName',
+                                            e.target.value
+                                        )
+                                    }
+                                    className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                />
+                            </div>
+                            <div className='space-y-2'>
+                                <label className='text-gray-700 font-medium'>
+                                    Last Name
+                                </label>
+                                <input
+                                    type='text'
+                                    placeholder='Enter Coordinator Last Name'
+                                    value={coordinator.lastName}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            index,
+                                            'lastName',
+                                            e.target.value
+                                        )
+                                    }
+                                    className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                />
+                            </div>
+                        </div>
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                            <div className='space-y-2'>
+                                <label className='text-gray-700 font-medium'>
+                                    Phone Number
+                                </label>
+                                <PhoneInput
+                                    country={'us'}
+                                    value={coordinator.phone}
+                                    onChange={(phone) =>
+                                        handleInputChange(index, 'phone', phone)
+                                    }
+                                    inputClass='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-blue-900 h-[46px] rounded-r-xl'
+                                    buttonClass='bg-blue-50 border border-blue-300 rounded-l-xl hover:bg-blue-100 h-[46px]'
+                                    containerClass='w-full h-[46px]'
+                                    dropdownClass='bg-white border border-blue-300 rounded-xl shadow-lg'
+                                    searchClass='p-2 border-b border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                    searchPlaceholder='Search country...'
+                                    inputProps={{
+                                        className:
+                                            'w-full h-full bg-blue-50 border border-blue-300 text-blue-900 text-base pl-12 h-[46px] rounded-r-xl',
+                                    }}
+                                    buttonProps={{
+                                        className:
+                                            'bg-blue-50 border border-blue-300 border-r-0 rounded-l-xl h-[46px]',
+                                    }}
+                                    dropdownProps={{
+                                        className:
+                                            'bg-white border border-blue-300 rounded-xl shadow-lg',
+                                    }}
+                                />
+                            </div>
+                            <div className='space-y-2'>
+                                <label className='text-gray-700 font-medium'>
+                                    Email
+                                </label>
+                                <input
+                                    type='email'
+                                    placeholder='Enter email'
+                                    value={coordinator.email}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            index,
+                                            'email',
+                                            e.target.value
+                                        )
+                                    }
+                                    className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                />
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+                ))}
             </div>
-          ))}
-        </div>
 
-        {/* Meals */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          {['AM', 'PM', 'NOC'].map((shift) => (
-            <div key={shift}>
-              <label className="text-gray-700 font-medium">{shift} Meal Start</label>
-              <input type="time" value={nurse[`${shift.toLowerCase()}MealStart`]}
-                onChange={e => handleNurseChange(index, `${shift.toLowerCase()}MealStart`, e.target.value)}
-                className="w-full p-3 mb-2 rounded-xl bg-blue-50 border border-blue-300" />
-              <label className="text-gray-700 font-medium">{shift} Meal End</label>
-              <input type="time" value={nurse[`${shift.toLowerCase()}MealEnd`]}
-                onChange={e => handleNurseChange(index, `${shift.toLowerCase()}MealEnd`, e.target.value)}
-                className="w-full p-3 rounded-xl bg-blue-50 border border-blue-300" />
+            <div className='w-full max-w-5xl mt-10 space-y-4'>
+                <h2 className='text-xl font-semibold'>Select Service Types</h2>
+                <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                    {nurseType.map((type, i) => (
+                        <label key={i} className='flex items-center space-x-2'>
+                            <input
+                                type='checkbox'
+                                checked={
+                                    !!nurses.find(
+                                        (n) => n.nurseType === type.nurse_type
+                                    )
+                                }
+                                onChange={() =>
+                                    handleToggleNurseType(type.nurse_type)
+                                }
+                            />
+                            <span>{type.nurse_type}</span>
+                        </label>
+                    ))}
+                </div>
             </div>
-          ))}
-        </div>
 
-        {/* Rate */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3">
-          <div>
-            <label className="text-gray-700 font-medium">Rate</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-              <input 
-                type="text" 
-                placeholder="0.000" 
-                value={nurse.rate}
-                onChange={e => handleNurseChange(index, "rate", e.target.value)}
-                className="w-full p-3 pl-8 rounded-xl bg-blue-50 border border-blue-300" 
+            {nurses.map((nurse, index) => (
+                <div
+                    key={index}
+                    className='w-full max-w-5xl mt-12 border-t pt-10 space-y-8'
+                >
+                    <h3 className='text-lg font-semibold mb-4'>
+                        Enter Details for {nurse.nurseType} Nurse
+                    </h3>
+                    {nurse.nurseType && (
+                        <>
+                            {/* Shifts */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                                {['AM', 'PM', 'NOC'].map((shift) => (
+                                    <div key={shift}>
+                                        <label className='text-gray-700 font-medium'>
+                                            {shift} Start
+                                        </label>
+                                        <input
+                                            type='time'
+                                            value={
+                                                nurse[
+                                                    `${shift.toLowerCase()}TimeStart`
+                                                ]
+                                            }
+                                            onChange={(e) =>
+                                                handleNurseChange(
+                                                    index,
+                                                    `${shift.toLowerCase()}TimeStart`,
+                                                    e.target.value
+                                                )
+                                            }
+                                            className='w-full p-3 mb-2 rounded-xl bg-blue-50 border border-blue-300'
+                                        />
+                                        <label className='text-gray-700 font-medium'>
+                                            {shift} End
+                                        </label>
+                                        <input
+                                            type='time'
+                                            value={
+                                                nurse[
+                                                    `${shift.toLowerCase()}TimeEnd`
+                                                ]
+                                            }
+                                            onChange={(e) =>
+                                                handleNurseChange(
+                                                    index,
+                                                    `${shift.toLowerCase()}TimeEnd`,
+                                                    e.target.value
+                                                )
+                                            }
+                                            className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300'
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Meals */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mt-6'>
+                                {['AM', 'PM', 'NOC'].map((shift) => (
+                                    <div key={shift}>
+                                        <label className='text-gray-700 font-medium'>
+                                            {shift} Meal Start
+                                        </label>
+                                        <input
+                                            type='time'
+                                            value={
+                                                nurse[
+                                                    `${shift.toLowerCase()}MealStart`
+                                                ]
+                                            }
+                                            onChange={(e) =>
+                                                handleNurseChange(
+                                                    index,
+                                                    `${shift.toLowerCase()}MealStart`,
+                                                    e.target.value
+                                                )
+                                            }
+                                            className='w-full p-3 mb-2 rounded-xl bg-blue-50 border border-blue-300'
+                                        />
+                                        <label className='text-gray-700 font-medium'>
+                                            {shift} Meal End
+                                        </label>
+                                        <input
+                                            type='time'
+                                            value={
+                                                nurse[
+                                                    `${shift.toLowerCase()}MealEnd`
+                                                ]
+                                            }
+                                            onChange={(e) =>
+                                                handleNurseChange(
+                                                    index,
+                                                    `${shift.toLowerCase()}MealEnd`,
+                                                    e.target.value
+                                                )
+                                            }
+                                            className='w-full p-3 rounded-xl bg-blue-50 border border-blue-300'
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Rate */}
+                            <div className='mt-6 grid grid-cols-1 md:grid-cols-3'>
+                                <div>
+                                    <label className='text-gray-700 font-medium'>
+                                        Rate
+                                    </label>
+                                    <div className='relative'>
+                                        <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'>
+                                            $
+                                        </span>
+                                        <input
+                                            type='text'
+                                            placeholder='0.000'
+                                            value={nurse.rate}
+                                            onChange={(e) =>
+                                                handleNurseChange(
+                                                    index,
+                                                    'rate',
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full p-3 pl-8 rounded-xl bg-blue-50 border border-blue-300"
               />
             </div>
           </div>
