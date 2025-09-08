@@ -113,7 +113,7 @@ const AddNurse = () => {
     return (
         <div className='flex flex-col items-center pt-10 w-full px-4'>
             <h1 className='text-4xl md:text-5xl font-semibold mb-8'>
-                Add NursTT
+                Add Nurse
             </h1>
             <div className='w-full max-w-4xl space-y-6'>
                 {/* First Name and Last Name */}
